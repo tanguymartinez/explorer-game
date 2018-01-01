@@ -8,6 +8,7 @@ Entity::Entity(const sf::Texture& texture, sf::IntRect int_rect, sf::Vector2f po
 	_sprite = AnimatedSprite(texture, int_rect, nb_frames, time);
 	_sprite.getSprite().scale(SCALE, SCALE);
 	_sprite.getSprite().setPosition(pos.x*SCALE, pos.y*SCALE);
+	_init_pos = sf::Vector2f(pos.x*SCALE, pos.y*SCALE);
 	_clickable = clickable;
 	_name = name;
 	_id=id;

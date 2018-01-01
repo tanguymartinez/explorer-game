@@ -8,6 +8,7 @@
 #include <vector>
 #include <SFML/Graphics.hpp>
 #include "Entity.h"
+#include "Player.h"
 #include "IntelligentText.h"
 #include <map>
 #include "Clickable.h"
@@ -21,7 +22,7 @@ class LevelManager : public sf::Drawable {
 		const std::string _path_to_map="res/map";
 		sf::Texture _texture;
 		sf::RectangleShape _selected_shape;
-		Entity _player;
+		Player _player;
 		void loadMap(std::vector<std::vector<Entity> >& map, const std::string); //loads map into _map
 		sf::Window* _window=0;
 		bool _has_selected=false;
@@ -50,10 +51,12 @@ class LevelManager : public sf::Drawable {
 	public:
 		LevelManager(sf::Window* w);
 		bool clickDetected();
+		void detectLevelChange();
 		void animate();
 		void interact(); 
 		bool getEntityUnderCursor(Entity& e);
 		bool getTextUnderCursor(IntelligentText& t);
 		bool unselected(const Entity& e);
+		void loadLevel(int map);
 };
 #endif

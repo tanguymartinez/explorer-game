@@ -19,11 +19,9 @@ AnimatedSprite::AnimatedSprite(const sf::Texture& texture, sf::IntRect base_rect
 		} else if(i>0){
 			x+=base_rect.width;
 		}
-		std::cout<<int_rect.left<<std::endl;
 		int_rect=sf::IntRect(x, y, base_rect.width, base_rect.height);
 		_entities_rect.push_back(int_rect);
 	}
-	std::cout<<_entities_rect.size()<<std::endl;
 	_sprite.setTexture(texture);
 	_sprite.setTextureRect(base_rect);
 	_duration = duration;
@@ -52,7 +50,6 @@ void AnimatedSprite::animate(){
 		} else{
 			_position++;
 		}
-		std::cout<<_entities_rect.at(_position).top<<std::endl;
 		_sprite.setTextureRect(_entities_rect.at(_position));
 	}
 }

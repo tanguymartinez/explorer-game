@@ -8,5 +8,7 @@ const int WINDOWS_HEIGHT = PIXEL_PER_TILE*TILES_HEIGHT;
 const int WINDOWS_WIDTH = PIXEL_PER_TILE*TILES_WIDTH;
 const int FRAMERATE_LIMIT = 60;
 const int FONT_SIZE = 24;
+const int THRESHOLD = -100;
+const int GAP = 0;
 
 #endif

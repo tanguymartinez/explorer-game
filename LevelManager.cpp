@@ -5,7 +5,7 @@ LevelManager::LevelManager(sf::Window* window){
 	_current_map=0;
 	loadMap(_map, _path_to_map);
 	std::cout<<"Map loaded!"<<std::endl;
-	_player = Entity(_texture, sf::IntRect(0, 150, 20, 70), sf::Vector2f(0,10), false, "Player", 0, 7, sf::seconds(.1f));
+	_player = Player(_texture, sf::IntRect(0, 150, 20, 70), sf::Vector2f(0,10), false, "Player", 0, 7, sf::seconds(.1f));
 	_selected_shape.setFillColor(sf::Color::Transparent);
 	_selected_shape.setOutlineThickness(5);
 	_selected_shape.setOutlineColor(sf::Color::Black);
@@ -81,12 +81,16 @@ void LevelManager::animate(){
 		_map.at(_current_map).at(i).animate(true);
 	}
 	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left)){
-		_player.move(DIRECTION::LEFT);
-		_player.animate(true);
+		if(!(_player.getGlobalBounds().left<0 && _current_map==0)){
+			_player.move(DIRECTION::LEFT);
+			_player.animate(true);
+		}
 	}
 	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right)){
-		_player.move(DIRECTION::RIGHT);
-		_player.animate(true);
+		if(!(_player.getGlobalBounds().left>WINDOWS_WIDTH-_player.getGlobalBounds().width && _current_map == _map.size()-1)){
+			_player.move(DIRECTION::RIGHT);
+			_player.animate(true);
+		}
 	}
 	if(!sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && !sf::Keyboard::isKeyPressed(sf::Keyboard::Right)){
 		_player.animate(false);
@@ -120,6 +124,7 @@ void LevelManager::interact(){
 			}
 		}
 	}
+	detectLevelChange();
 }
 
 bool LevelManager::unselected(const Entity& e){
@@ -206,3 +211,20 @@ bool LevelManager::clickDetected(){
 		return false;
 	}
 }
+
+void LevelManager::loadLevel(int map){
+	_current_map=map;
+}
+
+void LevelManager::detectLevelChange(){
+	if(_player.getGlobalBounds().left+_player.getGlobalBounds().width>WINDOWS_WIDTH-THRESHOLD){
+		if(_current_map+1<_map.size())
+			_current_map++;
+		_player.setPositionLeft();
+	} else if(_player.getGlobalBounds().left<THRESHOLD){
+		if(_current_map-1>=0)
+			_current_map--;
+		_player.setPositionRight();
+	}
+}
+

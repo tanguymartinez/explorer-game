@@ -3,3 +3,4 @@ Entity.cpp
 LevelManager.cpp
 IntelligentText.cpp
 AnimatedSprite.cpp
+Player.cpp

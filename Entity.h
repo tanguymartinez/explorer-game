@@ -16,12 +16,13 @@ enum DIRECTION{
 };
 
 class Entity : public sf::Drawable, public sf::Transformable, public Clickable{
-	private: //private member variables
+	protected: //private member variables
 		AnimatedSprite _sprite; //Sprite representing the player
 		std::string _name="Entity";
 		int _speed=5; //its speed
 		int _id;
 		bool _clickable = true;
+		sf::Vector2f _init_pos;
 
 	private: //private member functions
 		virtual void draw(sf::RenderTarget& target,sf::RenderStates states)const; //redefine the draw function to allow a nice syntax when drawing to the screen
