@@ -1,0 +1,12 @@
+Map file:
+-Integer: base rectangle (IntRect) left value
+-Integer: base rectangle (IntRect) top value
+-Integer: base rectangle (IntRect) width value
+-Integer: base rectangle (IntRect) height value
+-Float: initial position in the game, left value
+-FLoat: initial position in the game, top value
+-Boolean: if the entity is clickable or not
+-std::string: name of the entity
+-Int: id of the entity (used for text map hydrating)
+-Int: nuber of frames for animation
+-sf::Time: duration of the animation
