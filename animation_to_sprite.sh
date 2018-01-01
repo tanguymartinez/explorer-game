@@ -28,7 +28,7 @@ if [ "$#" -eq 3 ]; then
 			nb_lines=1
 		fi
 		echo "Number of lines: $nb_lines"
-		montage ${arr[*]} -tile ${tiles_per_line}x${nb_lines} -geometry ${source_width}x${source_height} -background transparent $3
+		montage ${arr[*]} -tile ${tiles_per_line}x${nb_lines} -geometry ${source_width}x${source_height} -background transparent $1$3
 	else
 		echo "Please specify a directory and a file in that specific order!"
 	fi

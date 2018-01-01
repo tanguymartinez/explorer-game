@@ -217,14 +217,21 @@ void LevelManager::loadLevel(int map){
 }
 
 void LevelManager::detectLevelChange(){
+	bool tmp = false;
 	if(_player.getGlobalBounds().left+_player.getGlobalBounds().width>WINDOWS_WIDTH-THRESHOLD){
-		if(_current_map+1<_map.size())
+		if(_current_map+1<_map.size()){
 			_current_map++;
-		_player.setPositionLeft();
+			_player.setPositionLeft();
+			tmp=true;
+		}
 	} else if(_player.getGlobalBounds().left<THRESHOLD){
-		if(_current_map-1>=0)
+		if(_current_map-1>=0){
 			_current_map--;
-		_player.setPositionRight();
+			_player.setPositionRight();
+			tmp=true;
+		}
 	}
+	if(tmp)
+		loadText(_text_map, _path_to_text);
 }
 

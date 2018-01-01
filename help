@@ -13,3 +13,5 @@ Map:
 
 Text map:
 -Text files correspong to entity of id # are stored in res/text/[map_number]/#/[nb], with nb the reply
+
+For both files, don't forget to add a blank lines at the end!
