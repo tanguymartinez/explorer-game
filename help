@@ -1,4 +1,4 @@
-Map file:
+Map:
 -Integer: base rectangle (IntRect) left value
 -Integer: base rectangle (IntRect) top value
 -Integer: base rectangle (IntRect) width value
@@ -8,5 +8,8 @@ Map file:
 -Boolean: if the entity is clickable or not
 -std::string: name of the entity
 -Int: id of the entity (used for text map hydrating)
--Int: nuber of frames for animation
--sf::Time: duration of the animation
+-Int: number of frames for animation
+-sf::Time: duration of the animation (in seconds)
+
+Text map:
+-Text files correspong to entity of id # are stored in res/text/[map_number]/#/[nb], with nb the reply
