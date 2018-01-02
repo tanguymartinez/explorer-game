@@ -72,11 +72,14 @@ sf::FloatRect Entity::getGlobalBounds() const{
 	return _sprite.getSprite().getGlobalBounds();
 }
 
-void Entity::animate(bool state){
+void Entity::animate(){
+	_sprite.animate();
+}
+
+void Entity::changeState(bool state){
 	if(state){
 		_sprite.play();
 	} else{
 		_sprite.stop();
 	}
-	_sprite.animate();
 }

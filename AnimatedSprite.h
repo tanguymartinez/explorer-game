@@ -12,7 +12,7 @@ class AnimatedSprite : public sf::Drawable, public sf::Transformable{
 		int _position=0;
 		sf::Time _duration;
 		sf::Clock _clock;
-		bool _play=false;
+		bool _play=true;
 		int _nb_frames=1;
 		virtual void draw(sf::RenderTarget& target,sf::RenderStates states)const; //redefine the draw function to allow a nice syntax when drawing to the screen
 	public:

@@ -1,4 +1,5 @@
 Map:
+Used for storing entities' relative information.
 -Integer: base rectangle (IntRect) left value
 -Integer: base rectangle (IntRect) top value
 -Integer: base rectangle (IntRect) width value
@@ -7,11 +8,17 @@ Map:
 -FLoat: initial position in the game, top value
 -Boolean: if the entity is clickable or not
 -std::string: name of the entity
--Int: id of the entity (used for text map hydrating)
+-Int: id of the entity (used for text map hydrating and clicked map hydrating))
 -Int: number of frames for animation
 -sf::Time: duration of the animation (in seconds)
 
 Text map:
+Used for storing replies displayed when object are clicked.
 -Text files correspong to entity of id # are stored in res/text/[map_number]/#/[nb], with nb the reply
 
-For both files, don't forget to add a blank lines at the end!
+Clicked map:
+Used for storing wheter an object has already been clicked.
+-Integer: id of the entity
+-Boolean: if the entity was clicked in previous sessions
+
+For map files, don't forget to add a blank lines at the end!

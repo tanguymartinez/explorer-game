@@ -68,7 +68,6 @@ void IntelligentText::resetPosition(){
 void IntelligentText::setText(std::string str){
 	_text.setString(str);
 	for(int i=0; i<_text.getString().getSize(); i++){
-		std::cout<<_text.findCharacterPos(i).x<<std::endl;
 		if(_text.findCharacterPos(i).x>_MAX_WIDTH){
 			std::cout<<"Breaking a line!"<<std::endl;
 			std::string str = _text.getString();

@@ -35,7 +35,8 @@ class Entity : public sf::Drawable, public sf::Transformable, public Clickable{
 		void display() const;
 		std::string getName() const {return _name;}
 		int getId() const {return _id;}
-		void animate(bool state);
+		void animate();
+		void changeState(bool state);
 
 		//Inherited from Clickable
 		virtual bool clicked(sf::Window* w) const;

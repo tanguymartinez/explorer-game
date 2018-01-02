@@ -5,7 +5,10 @@ LevelManager::LevelManager(sf::Window* window){
 	_current_map=0;
 	loadMap(_map, _path_to_map);
 	std::cout<<"Map loaded!"<<std::endl;
+	loadClickedMap(_clicked_map, _clicked_map_path);
+	std::cout<<"Clicked ap loaded!"<<std::endl;
 	_player = Player(_texture, sf::IntRect(0, 150, 20, 70), sf::Vector2f(0,10), false, "Player", 0, 7, sf::seconds(.1f));
+	_selected = 0; 
 	_selected_shape.setFillColor(sf::Color::Transparent);
 	_selected_shape.setOutlineThickness(5);
 	_selected_shape.setOutlineColor(sf::Color::Black);
@@ -78,51 +81,57 @@ void LevelManager::draw(sf::RenderTarget& target, sf::RenderStates states) const
 
 void LevelManager::animate(){
 	for(int i=0; i<_map.at(_current_map).size(); i++){
-		_map.at(_current_map).at(i).animate(true);
+		_map.at(_current_map).at(i).animate();
 	}
 	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left)){
 		if(!(_player.getGlobalBounds().left<0 && _current_map==0)){
 			_player.move(DIRECTION::LEFT);
-			_player.animate(true);
+			_player.changeState(true);
 		}
 	}
 	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right)){
 		if(!(_player.getGlobalBounds().left>WINDOWS_WIDTH-_player.getGlobalBounds().width && _current_map == _map.size()-1)){
 			_player.move(DIRECTION::RIGHT);
-			_player.animate(true);
+			_player.changeState(true);
 		}
 	}
 	if(!sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && !sf::Keyboard::isKeyPressed(sf::Keyboard::Right)){
-		_player.animate(false);
+		_player.changeState(false);
 	}
+	_player.animate();
 }
 
 void LevelManager::interact(){
 	if(clickDetected()){
-		Entity e;
+		Entity* e=0;
 		if(getEntityUnderCursor(e) && !_has_selected){
-			e.display();
-			_selected_shape.setSize(sf::Vector2f(e.getGlobalBounds().width, e.getGlobalBounds().height));
-			_selected_shape.setPosition(e.getGlobalBounds().left, e.getGlobalBounds().top);
+			std::cout<<e<<std::endl;
+			e->display();
+			std::cout<<"Test"<<std::endl;
+			_selected_shape.setSize(sf::Vector2f(e->getGlobalBounds().width, e->getGlobalBounds().height));
+			_selected_shape.setPosition(e->getGlobalBounds().left, e->getGlobalBounds().top);
 			_selected = e;
 			_has_selected = true;
-			for(int i=0; i<_text_map[e.getId()].size(); i++)
-				std::cout<<"Text in text map @ "<<e.getId()<<": "<<_text_map[e.getId()].at(i)<<std::endl;
-			_text = IntelligentText(e, _font_regular, _text_map[e.getId()].at(_reply_cursor));
+			for(int i=0; i<_text_map[e->getId()].size(); i++)
+				std::cout<<"Text in text map @ "<<e->getId()<<": "<<_text_map[e->getId()].at(i)<<std::endl;
+			_text = IntelligentText(*e, _font_regular, _text_map[e->getId()].at(_reply_cursor));
 			std::cout<<"Text relating to the entity clicked: "<<_text.getText()<<std::endl;
 			_reply_cursor++;
 		} else if(_has_selected){
-			if(_text_map[_selected.getId()].size()>_reply_cursor){
-				_text = IntelligentText(_selected, _font_regular, _text_map[_selected.getId()].at(_reply_cursor));
+			if(_text_map[_selected->getId()].size()>_reply_cursor){
+				_text = IntelligentText(*_selected, _font_regular, _text_map[_selected->getId()].at(_reply_cursor));
 				_reply_cursor++;
 			} else{
+				addClickedEntry(_selected->getId(), 1, _clicked_map_path);
+				std::cout<<"Stopping "<<_selected->getName()<<"'s animation!"<<std::endl;
+				_selected->changeState(false);
 				_can_unselect = true;
 				_has_selected=false;
 				_selected_shape.setSize(sf::Vector2f(0,0));
 				_text = IntelligentText();
 				_reply_cursor=0;
 			}
-		}
+		}	
 	}
 	detectLevelChange();
 }
@@ -135,12 +144,12 @@ bool LevelManager::unselected(const Entity& e){
 	}
 }
 
-bool LevelManager::getEntityUnderCursor(Entity& e){
+bool LevelManager::getEntityUnderCursor(Entity*& e){
 	for(int i=0; i<_map.at(_current_map).size(); i++){
 		if(_map.at(_current_map).at(i).hovered(_window)){
 			std::cout<<"Sprite "<<_map.at(_current_map).at(i).getName()<<" clicked!"<<std::endl;
-			e = _map.at(_current_map).at(i);
-			e.display();
+			e = &(_map.at(_current_map).at(i));
+			e->display();
 			return true;
 		}
 	}
@@ -235,3 +244,38 @@ void LevelManager::detectLevelChange(){
 		loadText(_text_map, _path_to_text);
 }
 
+void LevelManager::loadClickedMap(std::map<int, bool>& clicked_map, std::string path){
+	std::ifstream stream(path.c_str());
+	if(stream){
+		std::vector<std::string> vect;
+		std::string line;
+		int i=0;
+		while(getline(stream, line)){
+			if(line!=""){
+				vect=explode(line, ' ');
+				if(vect.at(i).size()==2){
+					clicked_map[vect.at(i).at(0)]=vect.at(i).at(1);
+				} else{
+					std::cout<<"Line "<<i<<" got the wrong number of arguments!"<<std::endl;
+				}
+			}else{
+				std::cout<<"Empty line!"<<std::endl;
+			}
+		} 
+	} else{
+		std::cout<<"Cannot open "<<path<<" file!"<<std::endl;
+	}
+}
+
+
+void LevelManager::addClickedEntry(int id, bool state, std::string path) const{
+	if(_clicked_map.count(id)==0){
+		std::ofstream stream(path.c_str(), std::ios::app);
+		if(stream){
+			stream<<std::to_string(id)<<" "<<std::to_string(state)<<std::endl;
+			std::cout<<"Entry added to the clicked map!"<<std::endl;
+		} else{
+			std::cout<<"Failed to open stream "<<path<<std::endl;
+		}
+	}
+}

@@ -24,10 +24,14 @@ class LevelManager : public sf::Drawable {
 		sf::RectangleShape _selected_shape;
 		Player _player;
 		void loadMap(std::vector<std::vector<Entity> >& map, const std::string); //loads map into _map
+		std::map<int, bool> _clicked_map;
+		const std::string _clicked_map_path="res/clicked";
+		void loadClickedMap(std::map<int, bool>& clicked_map, std::string path);
+		void addClickedEntry(int id, bool state, std::string path) const;
 		sf::Window* _window=0;
 		bool _has_selected=false;
 		bool _can_unselect=false;
-		Entity _selected;
+		Entity* _selected;
 		const std::string _path_to_font_regular="res/font/OpenSans-Regular.ttf";
 
 		//TEXT
@@ -54,7 +58,7 @@ class LevelManager : public sf::Drawable {
 		void detectLevelChange();
 		void animate();
 		void interact(); 
-		bool getEntityUnderCursor(Entity& e);
+		bool getEntityUnderCursor(Entity*& e);
 		bool getTextUnderCursor(IntelligentText& t);
 		bool unselected(const Entity& e);
 		void loadLevel(int map);
