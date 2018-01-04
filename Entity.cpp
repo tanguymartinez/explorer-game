@@ -83,3 +83,7 @@ void Entity::changeState(bool state){
 		_sprite.stop();
 	}
 }
+
+bool Entity::isClickable() const{
+	return _clickable;
+}

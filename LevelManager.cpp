@@ -7,7 +7,7 @@ LevelManager::LevelManager(sf::Window* window){
 	std::cout<<"Clicked map loaded!"<<std::endl;
 	loadMap(_map, _path_to_map);
 	std::cout<<"Map loaded!"<<std::endl;
-	_player = Player(_texture, sf::IntRect(0, 150, 20, 70), sf::Vector2f(0,10), false, "Player", 0, 7, sf::seconds(.1f));
+	_player = Player(_texture, sf::IntRect(0, 150, 20, 70), sf::Vector2f(0,5), false, "Player", 0, 7, sf::seconds(.1f));
 	_selected = 0; 
 	_selected_shape.setFillColor(sf::Color::Transparent);
 	_selected_shape.setOutlineThickness(5);
@@ -182,27 +182,29 @@ void LevelManager::loadText(std::map<int, std::vector<std::string> >& text_map, 
 	std::cout<<"Map size:"<<_map.size()<<std::endl;
 	std::cout<<"Map size @ "<<_map.at(_current_map).size()<<std::endl;
 	for(int i=0; i<_map.at(_current_map).size(); i++){
-		int id=_map.at(_current_map).at(i).getId();
-		std::ifstream stream((path+relativePath(_current_map, id)).c_str());
-		if(stream){
-			std::cout<<"Now reading the text map file!"<<std::endl;
-			while(getline(stream, line)){
-				if(line==""){
-					cursor++;
-					std::cout<<"Reply added to the text map!"<<std::endl;
-					str_vect.push_back(str);
-					str="";
-				} else{
-					str+=line;
+		if(_map.at(_current_map).at(i).isClickable()){
+			int id=_map.at(_current_map).at(i).getId();
+			std::ifstream stream((path+relativePath(_current_map, id)).c_str());
+			if(stream){
+				std::cout<<"Now reading the text map file!"<<std::endl;
+				while(getline(stream, line)){
+					if(line==""){
+						cursor++;
+						std::cout<<"Reply added to the text map!"<<std::endl;
+						str_vect.push_back(str);
+						str="";
+					} else{
+						str+=line;
+					}
 				}
+				str="";
+			} else{
+				std::cout<<"Cannot open text file @ "<<_current_map<<"/"<<i<<"!"<<std::endl;
 			}
+			_text_map[id]=str_vect;
 			str="";
-		} else{
-			std::cout<<"Cannot open text file @ "<<_current_map<<"/"<<i<<"!"<<std::endl;
+			str_vect.clear();
 		}
-		_text_map[id]=str_vect;
-		str="";
-		str_vect.clear();
 	}
 }
 

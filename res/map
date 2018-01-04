@@ -1,6 +1,9 @@
-0 75 150 75 0 0 0 Background 1 1 1
+0 75 150 75 0 0 0 Background_01 1 1 1
 0 0 15 8 68 33 1 Letter 2 2 0.5 
 
-0 225 150 75 0 0 0 Background1 3 1 1
+0 225 150 75 0 0 0 Background_02 3 1 1
 0 8 30 30 60 45 1 Chest 4 2 0.5
+
+0 300 150 75 0 0 0 Background_03 5 1 1
+60 0 30 37 60 38 0 Chair 6 1 1
 
