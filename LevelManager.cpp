@@ -3,10 +3,10 @@
 LevelManager::LevelManager(sf::Window* window){
 	_window = window;
 	_current_map=0;
+	loadClickedMap(_clicked_map, _clicked_map_path);
+	std::cout<<"Clicked map loaded!"<<std::endl;
 	loadMap(_map, _path_to_map);
 	std::cout<<"Map loaded!"<<std::endl;
-	loadClickedMap(_clicked_map, _clicked_map_path);
-	std::cout<<"Clicked ap loaded!"<<std::endl;
 	_player = Player(_texture, sf::IntRect(0, 150, 20, 70), sf::Vector2f(0,10), false, "Player", 0, 7, sf::seconds(.1f));
 	_selected = 0; 
 	_selected_shape.setFillColor(sf::Color::Transparent);
@@ -35,6 +35,14 @@ void LevelManager::loadMap(std::vector<std::vector<Entity> >& map, const std::st
 				if(vect.size()==11){
 					std::cout<<"Adding a tile in the map!"<<std::endl;
 					tmp_entities.push_back(Entity(_texture, sf::IntRect(std::stof(vect.at(0)), std::stof(vect.at(1)), std::stof(vect.at(2)), std::stof(vect.at(3))), sf::Vector2f(std::stof(vect.at(4)), std::stof(vect.at(5))), std::stoi(vect.at(6)), vect.at(7), std::stoi(vect.at(8)), std::stoi(vect.at(9)), sf::seconds(std::stof(vect.at(10)))));
+					if(!tmp_entities.empty()){
+						if(_clicked_map.count(tmp_entities.back().getId())!=0){
+							if(_clicked_map[tmp_entities.back().getId()]){
+								tmp_entities.back().changeState(false);
+							}
+						}
+					}
+					i++;
 				} else if(vect.size()==0){
 					std::cout<<"Adding a level to the map!"<<std::endl;
 					map.push_back(tmp_entities);
@@ -123,6 +131,7 @@ void LevelManager::interact(){
 				_reply_cursor++;
 			} else{
 				addClickedEntry(_selected->getId(), 1, _clicked_map_path);
+				_clicked_map[_selected->getId()]=1;
 				std::cout<<"Stopping "<<_selected->getName()<<"'s animation!"<<std::endl;
 				_selected->changeState(false);
 				_can_unselect = true;
@@ -253,8 +262,9 @@ void LevelManager::loadClickedMap(std::map<int, bool>& clicked_map, std::string 
 		while(getline(stream, line)){
 			if(line!=""){
 				vect=explode(line, ' ');
-				if(vect.at(i).size()==2){
-					clicked_map[vect.at(i).at(0)]=vect.at(i).at(1);
+				if(vect.size()==2){
+					clicked_map[std::stoi(vect.at(0))]=std::stoi(vect.at(1));
+					std::cout<<"Clicked map, added a line: "<<clicked_map[std::stoi(vect.at(0))]<<std::endl;
 				} else{
 					std::cout<<"Line "<<i<<" got the wrong number of arguments!"<<std::endl;
 				}
@@ -269,6 +279,7 @@ void LevelManager::loadClickedMap(std::map<int, bool>& clicked_map, std::string 
 
 
 void LevelManager::addClickedEntry(int id, bool state, std::string path) const{
+	std::cout<<"Clicked map @ id "<<id<<": "<<_clicked_map.count(id)<<std::endl;
 	if(_clicked_map.count(id)==0){
 		std::ofstream stream(path.c_str(), std::ios::app);
 		if(stream){
