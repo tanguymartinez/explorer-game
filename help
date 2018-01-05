@@ -17,7 +17,7 @@ Used for storing replies displayed when object are clicked.
 -Text files correspong to entity of id # are stored in res/text/[map_number]/#/[nb], with nb the reply
 
 Clicked map:
-Used for storing wheter an object has already been clicked.
+Used for storing whether an object has already been clicked.
 -Integer: id of the entity
 -Boolean: if the entity was clicked in previous sessions
 

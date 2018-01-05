@@ -111,8 +111,8 @@ void LevelManager::animate(){
 
 void LevelManager::interact(){
 	if(clickDetected()){
-		Entity* e=0;
-		if(getEntityUnderCursor(e) && !_has_selected){
+		Entity* e = getEntityUnderCursor();
+		if(e!=nullptr && !_has_selected){
 			std::cout<<e<<std::endl;
 			e->display();
 			std::cout<<"Test"<<std::endl;
@@ -153,16 +153,15 @@ bool LevelManager::unselected(const Entity& e){
 	}
 }
 
-bool LevelManager::getEntityUnderCursor(Entity*& e){
+Entity* LevelManager::getEntityUnderCursor(){
 	for(int i=0; i<_map.at(_current_map).size(); i++){
 		if(_map.at(_current_map).at(i).hovered(_window)){
 			std::cout<<"Sprite "<<_map.at(_current_map).at(i).getName()<<" clicked!"<<std::endl;
-			e = &(_map.at(_current_map).at(i));
-			e->display();
-			return true;
+			_map.at(_current_map).at(i).display();
+			return &(_map.at(_current_map).at(i));
 		}
 	}
-	return false;
+	return nullptr;
 }
 
 bool LevelManager::getTextUnderCursor(IntelligentText& t){

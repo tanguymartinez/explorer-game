@@ -58,7 +58,7 @@ class LevelManager : public sf::Drawable {
 		void detectLevelChange();
 		void animate();
 		void interact(); 
-		bool getEntityUnderCursor(Entity*& e);
+		Entity* getEntityUnderCursor();
 		bool getTextUnderCursor(IntelligentText& t);
 		bool unselected(const Entity& e);
 		void loadLevel(int map);
