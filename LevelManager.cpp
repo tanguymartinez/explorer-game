@@ -1,6 +1,11 @@
 #include "LevelManager.h"
 
 LevelManager::LevelManager(sf::Window* window){
+	dbm.open(_path_to_db);
+	if(dbm.createTables())
+		std::cout<<"Database set properly!"<<std::endl;
+	else
+		std::cout<<"Problem with database configuration!"<<std::endl;
 	_window = window;
 	_current_map=0;
 	loadClickedMap(_clicked_map, _clicked_map_path);
@@ -18,6 +23,10 @@ LevelManager::LevelManager(sf::Window* window){
 	} else{
 		std::cout<<"Error while loading the font!"<<std::endl;
 	}
+}
+
+LevelManager::~LevelManager(){
+	dbm.close();
 }
 
 void LevelManager::loadMap(std::vector<std::vector<Entity> >& map, const std::string path){

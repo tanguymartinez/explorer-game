@@ -1,5 +1,5 @@
-#ifndef LevelManager_h
-#define LevelManager_h
+#ifndef LEVELMANAGER_H_
+#define LEVELMANAGER_H_
 #include <sstream>
 #include <utility>
 #include <fstream>
@@ -12,6 +12,7 @@
 #include "IntelligentText.h"
 #include <map>
 #include "Clickable.h"
+#include "DatabaseManager.h"
 
 class LevelManager : public sf::Drawable {
 	private:
@@ -43,6 +44,10 @@ class LevelManager : public sf::Drawable {
 		std::string relativePath(int a, int b) const; //get the path
 		void loadText(std::map<int, std::vector<std::string> >& text_map, std::string path);
 
+		//DATABASE
+		DatabaseManager dbm;
+		const std::string _path_to_db="res/data/explorer.sqlite3";
+
 		//GENERAL
 		std::vector<std::string> explode(const std::string & s, char delim) const;
 		virtual void draw(sf::RenderTarget& target,sf::RenderStates states)const; //redefine the draw function to allow a nice syntax when drawing to the screen
@@ -54,6 +59,7 @@ class LevelManager : public sf::Drawable {
 		sf::Vector2f _mouse_pos;
 	public:
 		LevelManager(sf::Window* w);
+		~LevelManager();
 		bool clickDetected();
 		void detectLevelChange();
 		void animate();

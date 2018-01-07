@@ -11,7 +11,7 @@ if [ "$#" -eq  1 ]; then
 		done
 		echo "Content of the file: $string"
 		echo "Now attempting to compile ${string}!"
-		$(g++ $string -o $name -lsfml-window -lsfml-graphics -lsfml-system)
+		$(gcc $string -o $name -lpthread -ldl -lstdc++ -lsfml-window -lsfml-graphics -lsfml-system)
 #		if [ "$?" -eq 0 ]; then
 #			echo "Attempting to execute $name"
 #			$(./$name)

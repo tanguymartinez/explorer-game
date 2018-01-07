@@ -1,16 +1,13 @@
 Map:
 Used for storing entities' relative information.
+-Integer: id of the entity (used for text map hydrating and clicked map hydrating))
+-Integer: id of the corresponding map
+-std::string: name of the entity
 -Integer: base rectangle (IntRect) left value
 -Integer: base rectangle (IntRect) top value
 -Integer: base rectangle (IntRect) width value
 -Integer: base rectangle (IntRect) height value
--Float: initial position in the game, left value
--Float: initial position in the game, top value
 -Boolean: if the entity is clickable or not
--std::string: name of the entity
--Int: id of the entity (used for text map hydrating and clicked map hydrating))
--Int: number of frames for animation
--sf::Time: duration of the animation (in seconds)
 
 Text map:
 Used for storing replies displayed when object are clicked.
