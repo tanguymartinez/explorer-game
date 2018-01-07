@@ -9,26 +9,47 @@
 
 parseInsert(){
 	declare -a qp=($3)
-	declare -a sub=("${!2}")
 	declare string
-	for((j=0; j<${#sub_arr[@]}; j++)); do
-		if [ "$j" -eq 0 ] && [[ "${qp[@]}" =~ $j ]]; then
-			string="NULL,'${sub_arr[$j]}'"
-		elif [ "$j" -eq 0 ]; then
-			string="NULL,${sub_arr[$j]}"
-		elif [[ "${qp[@]}" =~ $j ]]; then
-			string="${string},'${sub_arr[$j]}'"
-		else
-			string="${string},${sub_arr[$j]}"
-		fi
-	done
-	echo $string
-	sqlite3 $1 "INSERT INTO $4 VALUES ($string);"
+	declare -a disp_parent_ids
+	if [ "$#" -ge 5 ]; then
+		case $5 in
+			1)
+				echo $(sqlite3 $1 "SELECT id, name FROM $6")
+				echo "Type in the desired $4 id for the entity ${sub_arr[0]}:"
+				read string
+				for((j=0; j<${#sub_arr[@]}; j++)); do
+					if [[ "${qp[@]}" =~ $j ]]; then
+						string="${string},'${sub_arr[$j]}'"
+					else
+						string="${string},${sub_arr[$j]}"
+					fi
+				done
+				echo $string
+				sqlite3 $1 "INSERT INTO $4 VALUES (NULL,$string);"
+
+				;;
+			*)
+				for((j=0; j<${#sub_arr[@]}; j++)); do
+					if [ "$j" -eq 0 ] && [[ "${qp[@]}" =~  $j ]]; then
+						string="NULL,'${sub_arr[$j]}'"
+					elif [ "$j" -eq 0 ]; then
+						string="NULL, ${sub_arr[$j]}"
+					elif [[ "${qp[@]}" =~ $j ]]; then
+						string="${string},'${sub_arr[$j]}'"
+					else
+						string="${string},${sub_arr[$j]}"
+					fi
+				done
+				echo $string
+				sqlite3 $1 "INSERT INTO $4 VALUES ($string);"
+				;;
+		esac
+	fi
 	echo "Inserted values into $4!"
 }
 
 #Usefull for reading and inserting raw map files
-readLoopInsert(){
+readLoop(){
 	declare -a qrl=($3)
 	declare -a arr
 	mapfile arr < $2
@@ -36,7 +57,7 @@ readLoopInsert(){
 	for((i=0; i<${#arr[@]}; i++)); do
 		if [ "${arr[$i]}" != "" ]; then
 			sub_arr=(${arr[$i]})
-			parseInsert $1 $sub_arr "${qrl[*]}" $4
+			parseInsert $1 $sub_arr "${qrl[*]}" $4 $5 $6
 		fi			
 	done
 
@@ -67,13 +88,13 @@ readLinesInsert(){
 }
 
 echo "Running script $0"
-if [ "$#" -eq 4 ]; then
-	if [ -f "$1" ] && [ -f "$2" ] && [ -f "$3" ]; then
+if [ "$#" -eq 5 ]; then
+	if [ -f "$1" ] && [ -f "$2" ] && [ -f "$3" ] && [ -f "$4" ]  && [ -f "$5" ]; then
 		declare -a q=(0)
-		readLoop $1 $2 "${q[*]}" MAP
-		q=(1)
-		readLoopInsert $1 $3 "${q[*]}" ENTITY
-		readLinesInsert $1 $4 ENTITY REPLY
+		readLoop $1 $2 "${q[*]}" MAP 0
+		readLoop $1 $3 "${q[*]}" ENTITY 1 MAP
+		readLoop $1 $4 "${q[*]}" ANIMATION 1 ENTITY
+		readLinesInsert $1 $5 ENTITY REPLY
 	else
 		echo 'This script takes files as arguments!'
 	fi
