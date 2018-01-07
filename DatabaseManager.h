@@ -17,16 +17,13 @@ class DatabaseManager{
 		int _return_code;
 		const std::string _path_to_map="res/map_data";
 		std::vector<std::vector<EntityData> > _entities_map;
-		void loadMapFile(std::vector<std::vector<EntityData> >& map, const std::string& path);
 		std::vector<std::string> explode(const std::string & s, char delim) const;
-		void hydrateDatabase(std::vector<std::vector<EntityData>
 	public:
 		DatabaseManager();
 		void open(std::string file);
 		void close();
-		void createTables();
 		void select();
-		void insertEntities();
+		void insertEntities(std::vector<Entity> entities);
 };
 
 #endif

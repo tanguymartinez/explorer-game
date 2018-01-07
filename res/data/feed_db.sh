@@ -2,7 +2,7 @@
 
 #Script to load data from text to database
 #Argument 1: path to database file
-#ARgument 2: path to maps' raw file
+#Argument 2: path to maps' raw file
 #Argument 2: path to entities' raw file
 #Argument 3: path to animations' raw file
 #Argument 4: path to replies' map raw file
@@ -24,7 +24,6 @@ parseInsert(){
 						string="${string},${sub_arr[$j]}"
 					fi
 				done
-				echo $string
 				sqlite3 $1 "INSERT INTO $4 VALUES (NULL,$string);"
 
 				;;
@@ -40,8 +39,19 @@ parseInsert(){
 						string="${string},${sub_arr[$j]}"
 					fi
 				done
+				columns=$(sqlite3 $1 "PRAGMA table_info($4)")
+				declare -a columns_arr=($(gawk -F"|" '
+				BEGIN{i=0; sub_str=2;}
+				{arr[i]=$2; i++;}
+				END{for(j=0;j<length(arr)-sub_str;j++){
+					if(j==(NR-sub_str-1))
+						printf("%s", arr[j]);
+					else
+						printf("%s%s", arr[j], ",");
+				}}' < <(echo "$columns")))
+				echo "${columns_arr[@]}"
 				echo $string
-				sqlite3 $1 "INSERT INTO $4 VALUES ($string);"
+				sqlite3 $1 "INSERT INTO $4(${columns_arr[@]}) VALUES ($string);"
 				;;
 		esac
 	fi
@@ -68,7 +78,7 @@ readLinesInsert(){
 	declare -a entities=($(sqlite3 $1 "SELECT * FROM $3"))
 	declare field
 	for((i=0; i<${#entities[@]}; i++)); do
-		fields=($(echo "${entities[$i]}" | awk -F"|" '{printf("%d %d %s %d",$NF,$2,$3, $1);}'))
+		fields=($(echo "${entities[$i]}" | gawk -F"|" '{printf("%d %d %s %d",$NF,$2,$3, $1);}'))
 		if [ "${fields[0]}" -ne 0 ]; then
 			echo "Please enter path to ${fields[2]} in map ${fields[1]}"
 			read input
