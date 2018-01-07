@@ -15,7 +15,7 @@ parseInsert(){
 		case $5 in
 			1)
 				echo $(sqlite3 $1 "SELECT id, name FROM $6")
-				echo "Type in the desired $4 id for the entity ${sub_arr[0]}:"
+				echo "Type in the desired $6 id for the $4 ${sub_arr[0]}:"
 				read string
 				for((j=0; j<${#sub_arr[@]}; j++)); do
 					if [[ "${qp[@]}" =~ $j ]]; then
