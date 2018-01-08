@@ -1,9 +1,8 @@
 main.cpp
+DatabaseManager.cpp
 Entity.cpp
 LevelManager.cpp
 IntelligentText.cpp
 AnimatedSprite.cpp
 Player.cpp
-DatabaseManager.cpp
-EntityData.cpp
 sqlite3.c

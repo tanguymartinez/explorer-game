@@ -3,12 +3,14 @@
 #include "Entity.h"
 #include "LevelManager.h"
 #include "constants.h"
+#include "DatabaseManager.h"
 
 int main()
 {
     sf::RenderWindow window(sf::VideoMode(WINDOWS_WIDTH,WINDOWS_HEIGHT), "Explorer Game");
     window.setFramerateLimit(FRAMERATE_LIMIT);
     LevelManager level_manager(&window);
+    DatabaseManager dbm(&level_manager);
     sf::Clock clock;
     while (window.isOpen())
     {

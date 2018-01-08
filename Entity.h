@@ -5,7 +5,6 @@
 #include <string>
 #include "Clickable.h"
 #include "AnimatedSprite.h"
-#include "DatabseManager.h"
 
 const float SCALE = 10;
 
@@ -17,9 +16,9 @@ enum DIRECTION{
 };
 
 class Entity : public sf::Drawable, public sf::Transformable, public Clickable{
+	friend class DatabaseManager;
 	protected: //private member variables
 		AnimatedSprite _sprite; //Sprite representing the player
-		DatabaseManager& _dbm;
 		std::string _name="Entity";
 		int _speed=5; //its speed
 		int _id;
@@ -31,7 +30,7 @@ class Entity : public sf::Drawable, public sf::Transformable, public Clickable{
 	public:
 		Entity();
 		//Entity(const std::string path, const sf::IntRect rect, const sf::Vector2f pos);
-		Entity(DatabaseManager& dbm, const sf::Texture& texture, sf::IntRect rect, sf::Vector2f pos, bool clickable, std::string name, int id, int nb_frames, sf::Time time);
+		Entity(const sf::Texture& texture, sf::IntRect rect, sf::Vector2f pos, bool clickable, std::string name, int id, int nb_frames, sf::Time time);
 		~Entity();
 		void move(DIRECTION d); //moves in the DIRECTION direction
 		void display() const;

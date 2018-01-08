@@ -12,8 +12,9 @@ parseInsert(){
 	declare string
 	declare -a disp_parent_ids
 	if [ "$#" -ge 5 ]; then
+		columns=$(sqlite3 $1 "PRAGMA table_info($4)")
 		case $5 in
-			1)
+			[12])
 				echo $(sqlite3 $1 "SELECT id, name FROM $6")
 				echo "Type in the desired $6 id for the $4 ${sub_arr[0]}:"
 				read string
@@ -24,8 +25,39 @@ parseInsert(){
 						string="${string},${sub_arr[$j]}"
 					fi
 				done
-				sqlite3 $1 "INSERT INTO $4 VALUES (NULL,$string);"
-
+				declare -a columns_arr=($(gawk -F"|" '
+				BEGIN{i=0; sub_str=1;}
+				{arr[i]=$2; i++;}
+				END{for(j=0;j<length(arr)-sub_str;j++){
+					if(j==(NR-sub_str-1))
+						printf("%s", arr[j]);
+					else
+						printf("%s%s", arr[j], ",");
+				}}' < <(echo "$columns")))
+				declare nb_defaults=($(gawk -F"|" '
+				BEGIN{i=0;}
+				{if($5!=""){
+					i++;
+				}
+				}
+				END{printf("%d", i);}' < <(echo "$columns")))
+				declare string_null
+				if (( $nb_defaults > 1 )); then
+					for((k=0;k<$nb_defaults;k++));do
+						if (( $k == 0 )); then
+							string_null="NULL,$string_null"
+						else
+							string_null="${string_null},NULL"
+						fi
+					done
+				else
+					string_null=NULL
+				fi
+				if (( $5 == 1)); then 
+					sqlite3 $1 "INSERT INTO $4 VALUES (NULL,$string, $string_null);"
+				else
+					sqlite3 $1 "INSERT INTO $4 VALUES (NULL,$string)"
+				fi
 				;;
 			*)
 				for((j=0; j<${#sub_arr[@]}; j++)); do
@@ -39,18 +71,15 @@ parseInsert(){
 						string="${string},${sub_arr[$j]}"
 					fi
 				done
-				columns=$(sqlite3 $1 "PRAGMA table_info($4)")
 				declare -a columns_arr=($(gawk -F"|" '
 				BEGIN{i=0; sub_str=2;}
 				{arr[i]=$2; i++;}
 				END{for(j=0;j<length(arr)-sub_str;j++){
-					if(j==(NR-sub_str-1))
-						printf("%s", arr[j]);
-					else
-						printf("%s%s", arr[j], ",");
+				if(j==(NR-sub_str-1))
+					printf("%s", arr[j]);
+				else
+					printf("%s%s", arr[j], ",");
 				}}' < <(echo "$columns")))
-				echo "${columns_arr[@]}"
-				echo $string
 				sqlite3 $1 "INSERT INTO $4(${columns_arr[@]}) VALUES ($string);"
 				;;
 		esac
@@ -76,9 +105,11 @@ readLoop(){
 #Useful for reading and inserting replies
 readLinesInsert(){
 	declare -a entities=($(sqlite3 $1 "SELECT * FROM $3"))
-	declare field
+	declare -a field
+	echo "${entities[@]}"
 	for((i=0; i<${#entities[@]}; i++)); do
-		fields=($(echo "${entities[$i]}" | gawk -F"|" '{printf("%d %d %s %d",$NF,$2,$3, $1);}'))
+		fields=($(echo "${entities[$i]}" | gawk -F"|" '{printf("%d %d %s %d",$(NF-1),$2,$3, $1);}'))
+		echo ${fields[0]}
 		if [ "${fields[0]}" -ne 0 ]; then
 			echo "Please enter path to ${fields[2]} in map ${fields[1]}"
 			read input
@@ -103,7 +134,7 @@ if [ "$#" -eq 5 ]; then
 		declare -a q=(0)
 		readLoop $1 $2 "${q[*]}" MAP 0
 		readLoop $1 $3 "${q[*]}" ENTITY 1 MAP
-		readLoop $1 $4 "${q[*]}" ANIMATION 1 ENTITY
+		readLoop $1 $4 "${q[*]}" ANIMATION 2 ENTITY
 		readLinesInsert $1 $5 ENTITY REPLY
 	else
 		echo 'This script takes files as arguments!'

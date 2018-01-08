@@ -1,6 +1,11 @@
 #include "DatabaseManager.h"
 
 DatabaseManager::DatabaseManager(){
+
+}
+
+DatabaseManager::DatabaseManager(LevelManager* lm){
+	_level_manager = lm;
 }
 
 void DatabaseManager::open(std::string file){
@@ -23,9 +28,10 @@ void DatabaseManager::close(){
 	sqlite3_close(_db);
 }
 
-void DatabaseManager::select(){
+void DatabaseManager::selectEntities(){
 	int return_value(0), i(0);
-	std::string query="SELECT * FROM contact";
+	std::vector<std::string> rows;
+	std::string query="SELECT id, name, left, top, width, height, clickable  FROM ENTITY WHERE map_id="+std::to_string(_level_manager->_current_map);
 	return_value = sqlite3_prepare_v2(_db, query.c_str(), -1, &_stmt, 0);
 	if(return_value){
 		std::cout<<"Error while preparing query!"<<std::endl;
@@ -34,7 +40,7 @@ void DatabaseManager::select(){
 		while(loop){
 			return_value = sqlite3_step(_stmt);
 			if(return_value==SQLITE_ROW){
-				std::cout<<sqlite3_column_int(_stmt, 0)<<std::endl;
+				rows.push_back(sqlite3_column_int(_stmt, 0)+sqlite3);
 			} else {
 				loop=false;
 			}
@@ -59,6 +65,6 @@ std::vector<std::string> DatabaseManager::explode(const std::string & s, char de
 	return result;
 }
 
-void DatabaseManager::insertEntities(std::vector<Entity> entities){
+void DatabaseManager::saveEntities(){
 	
 }

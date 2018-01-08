@@ -4,7 +4,7 @@ Entity::Entity(){
 
 }
 
-Entity::Entity(DatabaseManager& dbm, const sf::Texture& texture, sf::IntRect int_rect, sf::Vector2f pos, bool clickable, std::string name, int id, int nb_frames, sf::Time time){
+Entity::Entity(const sf::Texture& texture, sf::IntRect int_rect, sf::Vector2f pos, bool clickable, std::string name, int id, int nb_frames, sf::Time time){
 
 	_sprite = AnimatedSprite(texture, int_rect, nb_frames, time);
 	_sprite.getSprite().scale(SCALE, SCALE);

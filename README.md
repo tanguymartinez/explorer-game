@@ -22,7 +22,7 @@ This is is the first project I push to Github, happy reviewing!
 (and by the way, help is always welcome)
 
 ## A note on the bash scripts
-There are 2 scripts that I have made (very simple ones):
+There are 3 main scripts that I have made (very simple ones):
 - _cr\_sfml.sh_: Checks in the _files\_list_ file for files to compile, and then compiles them
 - _animation\_to\_sprite.sh_ : this one uses ImageMagick, and is handy to create a small spritesheet only containing the animation frames (from separate .png files)
 - _exec\_db\_inits.sh_ : uses two subscripts (_init\_db.sh_ and _feed\_tables.sh_) to empty the database's tables and then load in some data from files

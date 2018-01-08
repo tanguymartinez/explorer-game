@@ -12,9 +12,9 @@
 #include "IntelligentText.h"
 #include <map>
 #include "Clickable.h"
-#include "DatabaseManager.h"
 
 class LevelManager : public sf::Drawable {
+	friend class DatabaseManager;
 	private:
 		//MAP OF ENTITIES
 		std::vector<std::vector<Entity> > _map;
@@ -44,9 +44,6 @@ class LevelManager : public sf::Drawable {
 		std::string relativePath(int a, int b) const; //get the path
 		void loadText(std::map<int, std::vector<std::string> >& text_map, std::string path);
 
-		//DATABASE
-		DatabaseManager dbm;
-		const std::string _path_to_db="res/data/explorer.sqlite3";
 
 		//GENERAL
 		std::vector<std::string> explode(const std::string & s, char delim) const;
@@ -58,6 +55,7 @@ class LevelManager : public sf::Drawable {
 		bool _registered=false;
 		sf::Vector2f _mouse_pos;
 	public:
+		LevelManager();
 		LevelManager(sf::Window* w);
 		~LevelManager();
 		bool clickDetected();
