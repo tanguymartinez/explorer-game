@@ -12,19 +12,22 @@
 #include "IntelligentText.h"
 #include <map>
 #include "Clickable.h"
+#include "Animation.h"
 
 class LevelManager : public sf::Drawable {
 	friend class DatabaseManager;
 	private:
 		//MAP OF ENTITIES
-		std::vector<std::vector<Entity> > _map;
+		std::vector<Entity> _map;
 		int _current_map=0;
+		int _last_map=2;
+		int _nb_maps=3;
 		const std::string _spritesheet_path="res/image/spritesheet.png";
 		const std::string _path_to_map="res/map";
 		sf::Texture _texture;
 		sf::RectangleShape _selected_shape;
 		Player _player;
-		void loadMap(std::vector<std::vector<Entity> >& map, const std::string); //loads map into _map
+	//	void loadMap(std::vector<std::vector<Entity> >& map, const std::string); //loads map into _map
 		std::map<int, bool> _clicked_map;
 		const std::string _clicked_map_path="res/clicked";
 		void loadClickedMap(std::map<int, bool>& clicked_map, std::string path);

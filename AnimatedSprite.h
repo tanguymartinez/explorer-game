@@ -4,20 +4,18 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include "Animation.h"
 
 class AnimatedSprite : public sf::Drawable, public sf::Transformable{
 	private:
-		std::vector<sf::IntRect> _entities_rect;
+		std::vector<Animation> _animations;
 		sf::Sprite _sprite;
-		int _position=0;
-		sf::Time _duration;
-		sf::Clock _clock;
+		int _current_animation=0;
 		bool _play=true;
-		int _nb_frames=1;
 		virtual void draw(sf::RenderTarget& target,sf::RenderStates states)const; //redefine the draw function to allow a nice syntax when drawing to the screen
 	public:
 		AnimatedSprite();
-		AnimatedSprite(const sf::Texture& texture, sf::IntRect base_rect, int nb_frames, sf::Time duration);
+		AnimatedSprite(const sf::Texture& texture, sf::IntRect base_rect, std::vector<Animation>& animations);
 		const sf::Sprite& getSprite() const;
 		sf::Sprite& getSprite();
 		void animate();

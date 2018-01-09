@@ -8,7 +8,7 @@ class Player : public Entity{
 
 	public:
 		Player();
-		Player(const sf::Texture& texture, sf::IntRect rect, sf::Vector2f pos, bool clickable, std::string name, int id, int nb_frames, sf::Time time);
+		Player(const sf::Texture& texture, int left, int top, int width, int height, bool clickable, bool clicked,  std::string name, int id, std::vector<Animation> animations);
 		void setPositionLeft();
 		void setPositionRight();
 };

@@ -7,11 +7,18 @@ LevelManager::LevelManager(){
 LevelManager::LevelManager(sf::Window* window){
 	_window = window;
 	_current_map=0;
+	if(_texture.loadFromFile(_spritesheet_path))
+		std::cout<<"Spritesheet loaded!"<<std::endl;
+	else
+		std::cout<<"Error while loading spritesheet!"<<std::endl;
 	loadClickedMap(_clicked_map, _clicked_map_path);
 	std::cout<<"Clicked map loaded!"<<std::endl;
-	loadMap(_map, _path_to_map);
 	std::cout<<"Map loaded!"<<std::endl;
-	_player = Player(_texture, sf::IntRect(0, 150, 20, 70), sf::Vector2f(0,5), false, "Player", 0, 7, sf::seconds(.1f));
+	sf::IntRect int_rect(0, 150, 20, 70);
+	Animation player_anim(150, int_rect.left, int_rect.top, int_rect.width, int_rect.height, 7, sf::seconds(.5f));
+	std::vector<Animation> vect;
+	vect.push_back(player_anim);
+	_player = Player(_texture, int_rect.left, int_rect.top, int_rect.width, int_rect.height, 0, 0, "Player", 7, vect);
 	_selected = 0; 
 	_selected_shape.setFillColor(sf::Color::Transparent);
 	_selected_shape.setOutlineThickness(5);
@@ -26,7 +33,7 @@ LevelManager::LevelManager(sf::Window* window){
 
 LevelManager::~LevelManager(){
 }
-
+/*
 void LevelManager::loadMap(std::vector<std::vector<Entity> >& map, const std::string path){
 	std::ifstream stream(path.c_str());
 	std::string line;
@@ -68,7 +75,7 @@ void LevelManager::loadMap(std::vector<std::vector<Entity> >& map, const std::st
 	for(int i=0; i<map.size(); i++){
 		std::cout<<"Level "<<i<<" contains "<<map.at(i).size()<<" tiles!"<<std::endl;
 	}
-}
+}*/
 
 std::vector<std::string> LevelManager::explode(const std::string & s, char delim) const{
 	std::vector<std::string> result;
@@ -85,8 +92,8 @@ std::vector<std::string> LevelManager::explode(const std::string & s, char delim
 void LevelManager::draw(sf::RenderTarget& target, sf::RenderStates states) const{
 	// You can draw other high-level objects
 	if(_map.size()>0){
-		for(int i=0; i<_map.at(_current_map).size(); i++){
-			target.draw(_map.at(_current_map).at(i), states);
+		for(int i=0; i<_map.size(); i++){
+			target.draw(_map.at(i), states);
 		}
 		target.draw(_text, states);
 		target.draw(_selected_shape, states);
@@ -95,8 +102,9 @@ void LevelManager::draw(sf::RenderTarget& target, sf::RenderStates states) const
 }
 
 void LevelManager::animate(){
-	for(int i=0; i<_map.at(_current_map).size(); i++){
-		_map.at(_current_map).at(i).animate();
+	for(int i=0; i<_map.size(); i++){
+		_map.at(i).display();
+		_map.at(i).animate();
 	}
 	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left)){
 		if(!(_player.getGlobalBounds().left<0 && _current_map==0)){
@@ -105,7 +113,7 @@ void LevelManager::animate(){
 		}
 	}
 	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right)){
-		if(!(_player.getGlobalBounds().left>WINDOWS_WIDTH-_player.getGlobalBounds().width && _current_map == _map.size()-1)){
+		if(!(_player.getGlobalBounds().left>WINDOWS_WIDTH-_player.getGlobalBounds().width && _current_map == _last_map)){
 			_player.move(DIRECTION::RIGHT);
 			_player.changeState(true);
 		}
@@ -161,11 +169,11 @@ bool LevelManager::unselected(const Entity& e){
 }
 
 Entity* LevelManager::getEntityUnderCursor(){
-	for(int i=0; i<_map.at(_current_map).size(); i++){
-		if(_map.at(_current_map).at(i).hovered(_window)){
-			std::cout<<"Sprite "<<_map.at(_current_map).at(i).getName()<<" clicked!"<<std::endl;
-			_map.at(_current_map).at(i).display();
-			return &(_map.at(_current_map).at(i));
+	for(int i=0; i<_map.size(); i++){
+		if(_map.at(i).hovered(_window)){
+			std::cout<<"Sprite "<<_map.at(i).getName()<<" clicked!"<<std::endl;
+			_map.at(i).display();
+			return &(_map.at(i));
 		}
 	}
 	return nullptr;
@@ -186,10 +194,10 @@ void LevelManager::loadText(std::map<int, std::vector<std::string> >& text_map, 
 	int cursor=0;
 	std::vector<std::string> str_vect;
 	std::cout<<"Map size:"<<_map.size()<<std::endl;
-	std::cout<<"Map size @ "<<_map.at(_current_map).size()<<std::endl;
-	for(int i=0; i<_map.at(_current_map).size(); i++){
-		if(_map.at(_current_map).at(i).isClickable()){
-			int id=_map.at(_current_map).at(i).getId();
+	std::cout<<"Map size @ "<<_map.size()<<std::endl;
+	for(int i=0; i<_map.size(); i++){
+		if(_map.at(i).isClickable()){
+			int id=_map.at(i).getId();
 			std::ifstream stream((path+relativePath(_current_map, id)).c_str());
 			if(stream){
 				std::cout<<"Now reading the text map file!"<<std::endl;
@@ -245,7 +253,7 @@ void LevelManager::loadLevel(int map){
 void LevelManager::detectLevelChange(){
 	bool tmp = false;
 	if(_player.getGlobalBounds().left+_player.getGlobalBounds().width>WINDOWS_WIDTH-THRESHOLD){
-		if(_current_map+1<_map.size()){
+		if(_current_map+1<_nb_maps){
 			_current_map++;
 			_player.setPositionLeft();
 			tmp=true;

@@ -4,19 +4,16 @@ Entity::Entity(){
 
 }
 
-Entity::Entity(const sf::Texture& texture, sf::IntRect int_rect, sf::Vector2f pos, bool clickable, std::string name, int id, int nb_frames, sf::Time time){
-
-	_sprite = AnimatedSprite(texture, int_rect, nb_frames, time);
+Entity::Entity(const sf::Texture& texture, int left, int top, int width, int height, bool clickable, bool clicked, std::string name, int id, std::vector<Animation>& animations){
+	sf::IntRect int_rect(left,top,width,height);
+	_sprite = AnimatedSprite(texture, int_rect, animations);
 	_sprite.getSprite().scale(SCALE, SCALE);
-	_sprite.getSprite().setPosition(pos.x*SCALE, pos.y*SCALE);
-	_init_pos = sf::Vector2f(pos.x*SCALE, pos.y*SCALE);
+	_sprite.getSprite().setPosition(int_rect.left*SCALE, int_rect.top*SCALE);
+	_init_pos = sf::Vector2f(int_rect.left*SCALE, int_rect.top*SCALE);
 	_clickable = clickable;
 	_name = name;
 	_id=id;
-}
-
-Entity::~Entity(){
-
+	_clicked = clicked;
 }
 
 void Entity::draw(sf::RenderTarget& target, sf::RenderStates states) const

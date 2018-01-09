@@ -4,7 +4,7 @@ Player::Player(){
 
 }
 
-Player::Player(const sf::Texture& texture, sf::IntRect rect, sf::Vector2f pos, bool clickable, std::string name, int id, int nb_frames, sf::Time time) : Entity(texture, rect, pos, clickable, name, id, nb_frames, time){
+Player::Player(const sf::Texture& texture, int left, int top, int width, int height, bool clickable, bool clicked,  std::string name, int id, std::vector<Animation> animations) : Entity(texture, left, top, width, height, clickable, clicked,  name, id, animations){ 
 
 }
 

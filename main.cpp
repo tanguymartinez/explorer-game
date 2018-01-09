@@ -11,6 +11,7 @@ int main()
     window.setFramerateLimit(FRAMERATE_LIMIT);
     LevelManager level_manager(&window);
     DatabaseManager dbm(&level_manager);
+    dbm.selectEntities();
     sf::Clock clock;
     while (window.isOpen())
     {

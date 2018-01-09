@@ -10,6 +10,7 @@
 #include <fstream>
 #include "Entity.h"
 #include "LevelManager.h"
+#include "Animation.h"
 
 class DatabaseManager{
 	private:

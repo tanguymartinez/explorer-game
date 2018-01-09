@@ -4,5 +4,6 @@ Entity.cpp
 LevelManager.cpp
 IntelligentText.cpp
 AnimatedSprite.cpp
+Animation.cpp
 Player.cpp
 sqlite3.c
