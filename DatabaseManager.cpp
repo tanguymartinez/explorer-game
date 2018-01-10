@@ -31,6 +31,7 @@ void DatabaseManager::close(){
 
 void DatabaseManager::selectEntities(){
 	int return_value(0), i(0);
+	bool clickable = false;
 	std::vector<Entity> entities;
 	std::string query="SELECT id, name, left, top, width, height, clickable  FROM ENTITY WHERE map_id="+std::to_string(_level_manager->_current_map+1);
 	return_value = sqlite3_prepare_v2(_db, query.c_str(), -1, &_stmt, 0);
@@ -39,13 +40,21 @@ void DatabaseManager::selectEntities(){
 	} else{
 		bool loop = true;
 		int return_value_anim(1);
-		
 		sqlite3_stmt* stmt_anim;
 		while(loop){
 			return_value = sqlite3_step(_stmt);
 			if(return_value==SQLITE_ROW){
+				clickable=sqlite3_column_int(_stmt,6);
+				int id=sqlite3_column_int(_stmt,0);
+				std::cout<<"Id: "<<id<<std::endl;
+				if(clickable){
+					std::vector<std::string> replies=selectReplies(id);
+					for(int i=0;i<replies.size();i++)
+						std::cout<<replies.at(i);
+					_level_manager->_text_map[id-1]=replies;
+				}
 				std::vector<Animation> anim;
-				std::string query_anim = "SELECT * FROM ANIMATION A WHERE A.entity_id="+std::to_string(sqlite3_column_int(_stmt, 0));
+				std::string query_anim = "SELECT * FROM ANIMATION A WHERE A.entity_id="+std::to_string(id);
 				return_value_anim=sqlite3_prepare_v2(_db, query_anim.c_str(), -1, &stmt_anim, 0);
 				if(return_value_anim){
 					std::cout<<"Could not fetch animations!"<<std::endl;
@@ -61,7 +70,7 @@ void DatabaseManager::selectEntities(){
 						}
 					}
 					std::cout<<"Anim size in dbm: "<<anim.size()<<std::endl;
-					entities.push_back(Entity(_level_manager->_texture,sqlite3_column_int(_stmt, 2),sqlite3_column_int(_stmt, 3),sqlite3_column_int(_stmt, 4),sqlite3_column_int(_stmt, 5),sqlite3_column_int(_stmt, 6),sqlite3_column_int(_stmt, 7),reinterpret_cast<const char*>(sqlite3_column_text(_stmt,1)),sqlite3_column_int(_stmt, 0),anim));
+					entities.push_back(Entity(_level_manager->_texture,sqlite3_column_int(_stmt, 2),sqlite3_column_int(_stmt, 3),sqlite3_column_int(_stmt, 4),sqlite3_column_int(_stmt, 5),sqlite3_column_int(_stmt, 6),sqlite3_column_int(_stmt, 7),reinterpret_cast<const char*>(sqlite3_column_text(_stmt,1)),sqlite3_column_int(_stmt, 0)-1,anim));
 				}
 			} else {
 				loop=false;
@@ -74,6 +83,33 @@ void DatabaseManager::selectEntities(){
 	}
 	sqlite3_finalize(_stmt);
 	std::cout<<"Done loading entities from database!"<<std::endl;
+}
+
+std::vector<std::string> DatabaseManager::selectReplies(int entity_id){
+	std::cout<<"Loading replies!"<<std::endl;
+	sqlite3_stmt* stmt;
+	int return_value(0), i(0);
+	std::vector<std::string> replies;
+	std::string query="SELECT content  FROM REPLY WHERE entity_id="+std::to_string(entity_id);
+	std::cout<<"Query in replies: "<<query<<std::endl;
+	return_value = sqlite3_prepare_v2(_db, query.c_str(), -1, &stmt, 0);
+	if(return_value){
+		std::cout<<"Error while preparing query!"<<std::endl;
+	} else{
+		bool loop = true;
+		while(loop){
+			return_value = sqlite3_step(stmt);
+			if(return_value==SQLITE_ROW){
+				std::string str=reinterpret_cast<const char*>(sqlite3_column_text(stmt,0));
+				replies.push_back(str);
+			} else {
+				loop=false;
+			}
+		}
+	}
+	sqlite3_finalize(stmt);
+	std::cout<<"Loaded a batch of replies from database!"<<std::endl;
+	return replies;
 }
 
 void insertEntities(){

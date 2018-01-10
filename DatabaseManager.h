@@ -28,6 +28,7 @@ class DatabaseManager{
 		void close();
 		void saveEntities();
 		void selectEntities();
+		std::vector<std::string> selectReplies(int entity_id);
 };
 
 #endif

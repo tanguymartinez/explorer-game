@@ -24,7 +24,7 @@ LevelManager::LevelManager(sf::Window* window){
 	_selected_shape.setOutlineThickness(5);
 	_selected_shape.setOutlineColor(sf::Color::Black);
 	if(_font_regular.loadFromFile(_path_to_font_regular)){	
-		loadText(_text_map, _path_to_text);
+		std::cout<<"Font loaded!"<<std::endl;
 		std::cout<<"Text map loaded!"<<std::endl;
 	} else{
 		std::cout<<"Error while loading the font!"<<std::endl;
@@ -190,7 +190,6 @@ void LevelManager::loadText(std::map<int, std::vector<std::string> >& text_map, 
 	int cursor=0;
 	std::vector<std::string> str_vect;
 	std::cout<<"Map size:"<<_map.size()<<std::endl;
-	std::cout<<"Map size @ "<<_map.size()<<std::endl;
 	for(int i=0; i<_map.size(); i++){
 		if(_map.at(i).isClickable()){
 			int id=_map.at(i).getId();
@@ -247,22 +246,19 @@ void LevelManager::loadLevel(int map){
 }
 
 void LevelManager::detectLevelChange(){
-	bool tmp = false;
 	if(_player.getGlobalBounds().left+_player.getGlobalBounds().width>WINDOWS_WIDTH-THRESHOLD){
 		if(_current_map+1<_nb_maps){
 			_current_map++;
 			_player.setPositionLeft();
-			tmp=true;
+			loadText(_text_map, _path_to_text);
 		}
 	} else if(_player.getGlobalBounds().left<THRESHOLD){
 		if(_current_map-1>=0){
 			_current_map--;
 			_player.setPositionRight();
-			tmp=true;
+			loadText(_text_map, _path_to_text);
 		}
 	}
-	if(tmp)
-		loadText(_text_map, _path_to_text);
 }
 
 void LevelManager::loadClickedMap(std::map<int, bool>& clicked_map, std::string path){

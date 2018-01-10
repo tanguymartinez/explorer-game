@@ -118,6 +118,7 @@ readLinesInsert(){
 				mapfile lines < $input
 				for((j=0; j<${#lines[@]}; j++)); do
 					string="'${lines[$j]}'"
+					string=$(echo -n $string)
 					sqlite3 $1 "INSERT INTO $4 VALUES (NULL, ${fields[3]}, $j, $string);"
 					echo "Inserted values into $4!"
 				done
