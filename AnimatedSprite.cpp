@@ -28,6 +28,7 @@ void AnimatedSprite::draw(sf::RenderTarget& target, sf::RenderStates states) con
 }
 
 void AnimatedSprite::animate(){
+	_animations.at(_current_animation).animate();
 	_sprite.setTextureRect(_animations.at(_current_animation).getFrame());
 }
 
@@ -40,6 +41,5 @@ void AnimatedSprite::pause(){
 }
 
 void AnimatedSprite::stop(){
-	std::cout<<"Animations in AnimatedSprite: "<<_animations.size()<<std::endl;
-//	_animations.at(_current_animation).stop();
+	_animations.at(_current_animation).stop();
 }

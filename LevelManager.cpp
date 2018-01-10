@@ -15,10 +15,10 @@ LevelManager::LevelManager(sf::Window* window){
 	std::cout<<"Clicked map loaded!"<<std::endl;
 	std::cout<<"Map loaded!"<<std::endl;
 	sf::IntRect int_rect(0, 150, 20, 70);
-	Animation player_anim(150, int_rect.left, int_rect.top, int_rect.width, int_rect.height, 7, sf::seconds(.5f));
+	Animation player_anim(150, int_rect.left, int_rect.top, int_rect.width, int_rect.height, 7, sf::seconds(.1f));
 	std::vector<Animation> vect;
 	vect.push_back(player_anim);
-	_player=Player(_texture, int_rect.left, int_rect.top, int_rect.width, int_rect.height, 0, 0, "Player", 7, vect);
+	_player=Player(_texture, int_rect.left, 75-70, int_rect.width, int_rect.height, 0, 0, "Player", 7, vect);
 	_selected = 0; 
 	_selected_shape.setFillColor(sf::Color::Transparent);
 	_selected_shape.setOutlineThickness(5);
