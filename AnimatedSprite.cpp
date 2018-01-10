@@ -5,6 +5,7 @@ AnimatedSprite::AnimatedSprite(){
 
 AnimatedSprite::AnimatedSprite(const sf::Texture& texture, sf::IntRect base_rect, std::vector<Animation>& animations){
 	_animations = animations;
+	std::cout<<"Animation size in AnimatedSprite constructor: "<<_animations.size()<<std::endl;
 	int y=base_rect.top;
 	int x=base_rect.left;
 	_sprite.setTexture(texture);
@@ -27,9 +28,7 @@ void AnimatedSprite::draw(sf::RenderTarget& target, sf::RenderStates states) con
 }
 
 void AnimatedSprite::animate(){
-	std::cout<<_animations.size()<<std::endl;
 	_sprite.setTextureRect(_animations.at(_current_animation).getFrame());
-	std::cout<<_current_animation<<std::endl;
 }
 
 void AnimatedSprite::play(){
@@ -41,5 +40,6 @@ void AnimatedSprite::pause(){
 }
 
 void AnimatedSprite::stop(){
-	_animations.at(_current_animation).stop();
+	std::cout<<"Animations in AnimatedSprite: "<<_animations.size()<<std::endl;
+//	_animations.at(_current_animation).stop();
 }

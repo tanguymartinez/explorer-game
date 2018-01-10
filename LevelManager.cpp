@@ -18,7 +18,7 @@ LevelManager::LevelManager(sf::Window* window){
 	Animation player_anim(150, int_rect.left, int_rect.top, int_rect.width, int_rect.height, 7, sf::seconds(.5f));
 	std::vector<Animation> vect;
 	vect.push_back(player_anim);
-	_player = Player(_texture, int_rect.left, int_rect.top, int_rect.width, int_rect.height, 0, 0, "Player", 7, vect);
+	_player=Player(_texture, int_rect.left, int_rect.top, int_rect.width, int_rect.height, 0, 0, "Player", 7, vect);
 	_selected = 0; 
 	_selected_shape.setFillColor(sf::Color::Transparent);
 	_selected_shape.setOutlineThickness(5);
@@ -103,7 +103,6 @@ void LevelManager::draw(sf::RenderTarget& target, sf::RenderStates states) const
 
 void LevelManager::animate(){
 	for(int i=0; i<_map.size(); i++){
-		_map.at(i).display();
 		_map.at(i).animate();
 	}
 	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left)){
@@ -128,9 +127,6 @@ void LevelManager::interact(){
 	if(clickDetected()){
 		Entity* e = getEntityUnderCursor();
 		if(e!=nullptr && !_has_selected){
-			std::cout<<e<<std::endl;
-			e->display();
-			std::cout<<"Test"<<std::endl;
 			_selected_shape.setSize(sf::Vector2f(e->getGlobalBounds().width, e->getGlobalBounds().height));
 			_selected_shape.setPosition(e->getGlobalBounds().left, e->getGlobalBounds().top);
 			_selected = e;

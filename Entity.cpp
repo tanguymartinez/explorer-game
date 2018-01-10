@@ -6,6 +6,7 @@ Entity::Entity(){
 
 Entity::Entity(const sf::Texture& texture, int left, int top, int width, int height, bool clickable, bool clicked, std::string name, int id, std::vector<Animation>& animations){
 	sf::IntRect int_rect(left,top,width,height);
+	std::cout<<"Animations in entity: "<<animations.size()<<std::endl;
 	_sprite = AnimatedSprite(texture, int_rect, animations);
 	_sprite.getSprite().scale(SCALE, SCALE);
 	_sprite.getSprite().setPosition(int_rect.left*SCALE, int_rect.top*SCALE);
