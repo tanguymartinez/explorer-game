@@ -1,4 +1,5 @@
 #include "LevelManager.h"
+#include "DatabaseManager.h"
 
 LevelManager::LevelManager(){
 
@@ -33,49 +34,6 @@ LevelManager::LevelManager(sf::Window* window){
 
 LevelManager::~LevelManager(){
 }
-/*
-void LevelManager::loadMap(std::vector<std::vector<Entity> >& map, const std::string path){
-	std::ifstream stream(path.c_str());
-	std::string line;
-	sf::Vector2f pos;		
-	sf::Vector2f from;
-	std::vector<std::string> vect;
-	std::vector<Entity> tmp_entities;
-	int i=0;
-	if(_texture.loadFromFile(_spritesheet_path)){
-		if(stream){
-			while(getline(stream, line)){
-				vect = explode(line, ' ');
-				if(vect.size()==11){
-					std::cout<<"Adding a tile in the map!"<<std::endl;
-					tmp_entities.push_back(Entity(_texture, sf::IntRect(std::stof(vect.at(0)), std::stof(vect.at(1)), std::stof(vect.at(2)), std::stof(vect.at(3))), sf::Vector2f(std::stof(vect.at(4)), std::stof(vect.at(5))), std::stoi(vect.at(6)), vect.at(7), std::stoi(vect.at(8)), std::stoi(vect.at(9)), sf::seconds(std::stof(vect.at(10)))));
-					if(!tmp_entities.empty()){
-						if(_clicked_map.count(tmp_entities.back().getId())!=0){
-							if(_clicked_map[tmp_entities.back().getId()]){
-								tmp_entities.back().changeState(false);
-							}
-						}
-					}
-					i++;
-				} else if(vect.size()==0){
-					std::cout<<"Adding a level to the map!"<<std::endl;
-					map.push_back(tmp_entities);
-					tmp_entities.clear();
-				} else{
-					std::cout<<"Wrong number of arguments in map file at line "<<i<<"!"<<std::endl;
-				}
-				i++;
-			}
-		} else{
-			std::cout<<path<<" error!"<<std::endl;
-		}
-	} else{
-		std::cout<<"Cannot load map texture!"<<std::endl;
-	}
-	for(int i=0; i<map.size(); i++){
-		std::cout<<"Level "<<i<<" contains "<<map.at(i).size()<<" tiles!"<<std::endl;
-	}
-}*/
 
 std::vector<std::string> LevelManager::explode(const std::string & s, char delim) const{
 	std::vector<std::string> result;
@@ -184,39 +142,6 @@ bool LevelManager::getTextUnderCursor(IntelligentText& t){
 	return false;
 }
 
-void LevelManager::loadText(std::map<int, std::vector<std::string> >& text_map, std::string path){
-	std::string line;
-	std::string str="";
-	int cursor=0;
-	std::vector<std::string> str_vect;
-	std::cout<<"Map size:"<<_map.size()<<std::endl;
-	for(int i=0; i<_map.size(); i++){
-		if(_map.at(i).isClickable()){
-			int id=_map.at(i).getId();
-			std::ifstream stream((path+relativePath(_current_map, id)).c_str());
-			if(stream){
-				std::cout<<"Now reading the text map file!"<<std::endl;
-				while(getline(stream, line)){
-					if(line==""){
-						cursor++;
-						std::cout<<"Reply added to the text map!"<<std::endl;
-						str_vect.push_back(str);
-						str="";
-					} else{
-						str+=line;
-					}
-				}
-				str="";
-			} else{
-				std::cout<<"Cannot open text file @ "<<_current_map<<"/"<<i<<"!"<<std::endl;
-			}
-			_text_map[id]=str_vect;
-			str="";
-			str_vect.clear();
-		}
-	}
-}
-
 std::string LevelManager::relativePath(int a, int b) const{
 	return std::to_string(a)+"/"+std::to_string(b);
 }
@@ -248,15 +173,20 @@ void LevelManager::loadLevel(int map){
 void LevelManager::detectLevelChange(){
 	if(_player.getGlobalBounds().left+_player.getGlobalBounds().width>WINDOWS_WIDTH-THRESHOLD){
 		if(_current_map+1<_nb_maps){
+			_text_map.clear();
+			_map.clear();
 			_current_map++;
 			_player.setPositionLeft();
-			loadText(_text_map, _path_to_text);
+			std::cout<<"Going to hydrate in LevelManager!"<<std::endl;
+			_dbm->hydrate();	
 		}
 	} else if(_player.getGlobalBounds().left<THRESHOLD){
 		if(_current_map-1>=0){
+			_text_map.clear();
+			_map.clear();
 			_current_map--;
 			_player.setPositionRight();
-			loadText(_text_map, _path_to_text);
+			_dbm->hydrate();
 		}
 	}
 }
@@ -297,4 +227,8 @@ void LevelManager::addClickedEntry(int id, bool state, std::string path) const{
 			std::cout<<"Failed to open stream "<<path<<std::endl;
 		}
 	}
+}
+
+void LevelManager::setDatabaseManager(DatabaseManager* dbm){
+	_dbm = dbm;
 }

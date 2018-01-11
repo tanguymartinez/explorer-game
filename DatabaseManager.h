@@ -1,5 +1,8 @@
 #ifndef DATABASEMANAGER_H_
 #define DATABASEMANAGER_H_
+
+class LevelManager;
+
 #include "sqlite3.h"
 #include <string>
 #include <iostream>
@@ -9,7 +12,6 @@
 #include <iostream>
 #include <fstream>
 #include "Entity.h"
-#include "LevelManager.h"
 #include "Animation.h"
 
 class DatabaseManager{
@@ -23,11 +25,11 @@ class DatabaseManager{
 		std::vector<std::string> explode(const std::string & s, char delim) const;
 	public:
 		DatabaseManager();
-		DatabaseManager(LevelManager* lm);
 		void open(std::string file);
 		void close();
 		void saveEntities();
-		void selectEntities();
+		void hydrate();
+		void setLevelManager(LevelManager* level_manager);
 		std::vector<std::string> selectReplies(int entity_id);
 };
 

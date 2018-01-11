@@ -1,5 +1,8 @@
 #ifndef LEVELMANAGER_H_
 #define LEVELMANAGER_H_
+
+class DatabaseManager;
+
 #include <sstream>
 #include <utility>
 #include <fstream>
@@ -17,6 +20,8 @@
 class LevelManager : public sf::Drawable {
 	friend class DatabaseManager;
 	private:
+		//DB MANAGER
+		DatabaseManager* _dbm;
 		//MAP OF ENTITIES
 		std::vector<Entity> _map;
 		int _current_map=0;
@@ -27,7 +32,6 @@ class LevelManager : public sf::Drawable {
 		sf::Texture _texture;
 		sf::RectangleShape _selected_shape;
 		Player _player;
-	//	void loadMap(std::vector<std::vector<Entity> >& map, const std::string); //loads map into _map
 		std::map<int, bool> _clicked_map;
 		const std::string _clicked_map_path="res/clicked";
 		void loadClickedMap(std::map<int, bool>& clicked_map, std::string path);
@@ -45,8 +49,6 @@ class LevelManager : public sf::Drawable {
 		std::map<int, std::vector<std::string> > _text_map; //loads texts into a vector of vector (1st dimension = number of entities in level, 2nd dimension = number of replies
 		int _reply_cursor=0;
 		std::string relativePath(int a, int b) const; //get the path
-		void loadText(std::map<int, std::vector<std::string> >& text_map, std::string path);
-
 
 		//GENERAL
 		std::vector<std::string> explode(const std::string & s, char delim) const;
@@ -69,5 +71,6 @@ class LevelManager : public sf::Drawable {
 		bool getTextUnderCursor(IntelligentText& t);
 		bool unselected(const Entity& e);
 		void loadLevel(int map);
+		void setDatabaseManager(DatabaseManager* dbm);
 };
 #endif

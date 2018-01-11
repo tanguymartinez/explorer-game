@@ -1,3 +1,6 @@
 Background_01 0 75 150 75 1 1
 Letter_flickering 0 0 15 8 2 0.5
+Background_02 0 225 150 75 1 1
 Chest_flickering 0 8 30 30 2 0.5
+Background_03 0 300 150 75 1 1
+Chair 60 0 30 37 1 1
