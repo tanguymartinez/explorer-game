@@ -27,10 +27,12 @@ class DatabaseManager{
 		DatabaseManager();
 		void open(std::string file);
 		void close();
-		void saveEntities();
+		void save();
 		void hydrate();
 		void setLevelManager(LevelManager* level_manager);
+		void updateClicked(int id);
 		std::vector<std::string> selectReplies(int entity_id);
+		std::vector<Animation> selectAnimations(int entity_id);
 };
 
 #endif

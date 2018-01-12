@@ -34,9 +34,7 @@ class LevelManager : public sf::Drawable {
 		Player _player;
 		std::map<int, bool> _clicked_map;
 		const std::string _clicked_map_path="res/clicked";
-		void loadClickedMap(std::map<int, bool>& clicked_map, std::string path);
-		void addClickedEntry(int id, bool state, std::string path) const;
-		sf::Window* _window=0;
+	sf::Window* _window=0;
 		bool _has_selected=false;
 		bool _can_unselect=false;
 		Entity* _selected;

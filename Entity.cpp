@@ -86,3 +86,7 @@ void Entity::changeState(bool state){
 bool Entity::isClickable() const{
 	return _clickable;
 }
+
+void Entity::setClicked(){
+	_clicked=true;
+}

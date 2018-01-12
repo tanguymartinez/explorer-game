@@ -12,11 +12,8 @@ LevelManager::LevelManager(sf::Window* window){
 		std::cout<<"Spritesheet loaded!"<<std::endl;
 	else
 		std::cout<<"Error while loading spritesheet!"<<std::endl;
-	loadClickedMap(_clicked_map, _clicked_map_path);
-	std::cout<<"Clicked map loaded!"<<std::endl;
-	std::cout<<"Map loaded!"<<std::endl;
 	sf::IntRect int_rect(0, 150, 20, 70);
-	Animation player_anim(150, int_rect.left, int_rect.top, int_rect.width, int_rect.height, 7, sf::seconds(.1f));
+	Animation player_anim(150, "Player_animation", int_rect.left, int_rect.top, int_rect.width, int_rect.height, 7, sf::seconds(.1f));
 	std::vector<Animation> vect;
 	vect.push_back(player_anim);
 	_player=Player(_texture, int_rect.left, 75-70, int_rect.width, int_rect.height, 0, 0, "Player", 7, vect);
@@ -99,8 +96,8 @@ void LevelManager::interact(){
 				_text = IntelligentText(*_selected, _font_regular, _text_map[_selected->getId()].at(_reply_cursor));
 				_reply_cursor++;
 			} else{
-				addClickedEntry(_selected->getId(), 1, _clicked_map_path);
-				_clicked_map[_selected->getId()]=1;
+				_selected->setClicked();
+				_dbm->updateClicked(_selected->getId()+1);
 				std::cout<<"Stopping "<<_selected->getName()<<"'s animation!"<<std::endl;
 				_selected->changeState(false);
 				_can_unselect = true;
@@ -171,8 +168,11 @@ void LevelManager::loadLevel(int map){
 }
 
 void LevelManager::detectLevelChange(){
-	if(_player.getGlobalBounds().left+_player.getGlobalBounds().width>WINDOWS_WIDTH-THRESHOLD){
+	bool right=_player.getGlobalBounds().left+_player.getGlobalBounds().width>WINDOWS_WIDTH-THRESHOLD;
+	bool left=_player.getGlobalBounds().left<THRESHOLD;
+	if(right){
 		if(_current_map+1<_nb_maps){
+			_dbm->save();
 			_text_map.clear();
 			_map.clear();
 			_current_map++;
@@ -180,51 +180,14 @@ void LevelManager::detectLevelChange(){
 			std::cout<<"Going to hydrate in LevelManager!"<<std::endl;
 			_dbm->hydrate();	
 		}
-	} else if(_player.getGlobalBounds().left<THRESHOLD){
+	} else if(left){
 		if(_current_map-1>=0){
+			_dbm->save();
 			_text_map.clear();
 			_map.clear();
 			_current_map--;
 			_player.setPositionRight();
 			_dbm->hydrate();
-		}
-	}
-}
-
-void LevelManager::loadClickedMap(std::map<int, bool>& clicked_map, std::string path){
-	std::ifstream stream(path.c_str());
-	if(stream){
-		std::vector<std::string> vect;
-		std::string line;
-		int i=0;
-		while(getline(stream, line)){
-			if(line!=""){
-				vect=explode(line, ' ');
-				if(vect.size()==2){
-					clicked_map[std::stoi(vect.at(0))]=std::stoi(vect.at(1));
-					std::cout<<"Clicked map, added a line: "<<clicked_map[std::stoi(vect.at(0))]<<std::endl;
-				} else{
-					std::cout<<"Line "<<i<<" got the wrong number of arguments!"<<std::endl;
-				}
-			}else{
-				std::cout<<"Empty line!"<<std::endl;
-			}
-		} 
-	} else{
-		std::cout<<"Cannot open "<<path<<" file!"<<std::endl;
-	}
-}
-
-
-void LevelManager::addClickedEntry(int id, bool state, std::string path) const{
-	std::cout<<"Clicked map @ id "<<id<<": "<<_clicked_map.count(id)<<std::endl;
-	if(_clicked_map.count(id)==0){
-		std::ofstream stream(path.c_str(), std::ios::app);
-		if(stream){
-			stream<<std::to_string(id)<<" "<<std::to_string(state)<<std::endl;
-			std::cout<<"Entry added to the clicked map!"<<std::endl;
-		} else{
-			std::cout<<"Failed to open stream "<<path<<std::endl;
 		}
 	}
 }
