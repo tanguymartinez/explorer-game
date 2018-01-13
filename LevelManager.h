@@ -32,9 +32,7 @@ class LevelManager : public sf::Drawable {
 		sf::Texture _texture;
 		sf::RectangleShape _selected_shape;
 		Player _player;
-		std::map<int, bool> _clicked_map;
-		const std::string _clicked_map_path="res/clicked";
-	sf::Window* _window=0;
+		sf::Window* _window=0;
 		bool _has_selected=false;
 		bool _can_unselect=false;
 		Entity* _selected;

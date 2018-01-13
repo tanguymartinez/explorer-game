@@ -1,0 +1,208 @@
+@startuml
+
+LevelManager "1,1" o--o "1,1" DatabaseManager
+Player "1,1" --* "1,1"  LevelManager
+Entity "1,1" --* "1,n"  LevelManager
+IntelligentText "1,1" --* "1,1" Entity
+AnimatedSprite "1,n" *-- "1,1" Animation
+AnimatedSprite "1,1" --* "1,1" Entity
+Player --|> Entity
+Entity --|> Clickable
+
+enum Position{
+	POS_LEFT,
+	POS_RIGHT,
+	POS_TOP,
+	POS_BOTTOM
+}
+
+class IntelligentText{
+	__Private__
+	-_text : sf::Text
+	-_relative_to : Entity
+	-_clickable : bool
+	-_rect : sf::RectangleShape
+	-_MAX_WIDTH : int
+	-calculatePosition() const : sf::Vector2f
+	-setPosition(sf::Vector2f position) : void
+	--Drawing--
+	-virtual draw(sf::RenderTarget& target, sf::RenderStates states) : void
+	__Public__
+	+IntelligentText()
+	+IntelligentText(const Entity& relative_to, const sf::Font& font,
+const std::string str)
+	+isEmpty() const : bool
+	+resetPosition() : void
+	+getText() const : std::string
+	+setText(const std::string) : void
+	--Inherited from Clickable--
+	+virtual clicked(sf::Window* w) const : bool
+	+virtual getGlobalBounds() const : sf::FloatRect
+	+virtual hovered(sf::Window* w) const : bool--Inherited from Clickable--
+	
+}
+
+class Clickable{
+	__Public__
+	virtual clicked(sf::Window* w) const = 0 : bool
+	virtual getGlobalBounds() const = 0 : sf::FloatRect
+	virtual hovered(sf::Window* w) const = 0 : bool
+}
+
+class Player{
+	__Public__
+	+Player()
+	+Player(const sf::Texture, int left, int top, int width, int height,
+bool clickable, bool clicked, std::string name, int id, std::vector<Animation>& animations)
+	+setPositionLeft() : void
+	+setPoisitionRight() : void
+	+disaply() const : void
+}
+
+enum Direction{
+	UP,
+	DOWN,
+	LEFT,
+	RIGHT
+}
+
+class Entity{
+	__Protected__
+	--Sprite Related--
+	#_sprite : AnimatedSprite
+	#_init_pos : sf::Vector2f
+	__Private__
+	-_name : std::string
+	-_speed : int
+	-_id : int
+	-_clickable : bool
+	-_clicked : bool
+	--Drawing--
+	-virtual draw(sf::RenderTarget& target, sf::RenderStates states) const : void
+	__Public__
+	+Entity()
+	+Entity(const sf::Texture& texture, int left, int top, int width, int height, bool clickable, bool clicked, std::string name, int id, std::vector<Animation>& animations)
+	+move(DIRECTION d) : void
+	+display() const : void
+	+getName() const : std::string
+	+getId() const : int
+	+animate() : void
+	+changeState(bool state) : void
+	+isClickable() const : bool
+	+setClicked() : void
+	--Inherited from Clickable--
+	+virtual clicked(sf::Window* w) const : bool
+	+virtual getGlobalBounds() const : sf::FloatRect
+	+virtual hovered(sf::Window* w) const : bool
+}
+
+class Animation{
+	__Private__
+	-_entities_rect : std::vector<sf::IntRect>
+	-_position : int
+	-_clock : sf::Clock
+	-_play : bool
+	-_nb_frames : int
+	-_name : std::string
+	__Public__
+	+Animation()
+	+Animation(int spritesheet_width, std::string nae, int left, int top, int width, int height, in nb_frames, sf::Time duration)
+	+getFrame() const : sf::IntRect
+	+animate() : void
+	+play() : void
+	+pause() : void
+	+stop() : void
+	+display() const : void
+}
+
+class AnimatedSprite{
+	__Private__
+	-_animations : std::vector<Animation>
+	-_sprite : sf::Sprite
+	-_curent_animation : int
+	-_play : bool
+	--Drawing--
+	-virtual draw(sf::RenderTarget& target, sf::RenderStates states) const : void
+	__Public__
+	+AnimatedSprite()
+	+AnimationSprite(const sf::Texture& texture, sf::IntRect base_rect,
+std::vector<Animation>& animations)
+	+getSprite() const : const sf::Sprite&
+	+getSprite() : sf::Sprite&
+	+animate() : void
+	+play() : void
+	+pause() : void
+	+stop() : void
+}
+
+class LevelManager{
+	__Private__
+	..Database..
+	-_dbm : DatabaseManager*
+	-..Map..
+	-_current_map : int
+	-_last_map : int
+	-_nb_maps : int
+	-_spritesheet_path : const std::string
+	-_path_to_map : const std::string
+	..Entities..
+	-_map : std::vector<Entity>
+	-_texture : sf::Texture
+	-_selected_shape : sf::RectangleShape
+	-_player : Player
+	-_window : sf::Window
+	-_has_selected : bool
+	-_can_unselect : bool
+	-_selected : Entity*
+	..Text..
+	-_path_to_font_regular : const std::string
+	-_font_regular : sf::Font
+	-_text : IntelligentText
+	-_path_to_text : const std::string
+	-_text_map : std::map<int, std::vector<std::string> >
+	-_reply_cursor : int
+	-relativePath(int a, int b) const : std::string
+	-explode(const std::string & str, char delim)
+	..Click Manager..
+	-_was_pressed : bool
+	-_pressed : bool
+	-_registered : bool
+	-_mouse_pos : sf::Vector2f
+	..Drawing..
+	virtual draw(sf::RenderTarget& target, sf::RenderStates states) const : void
+	__Public__
+	+LevelManager()
+	+LevelManager(sf::Window* window)
+	+~LevelManager()
+	+clickDetected() : bool
+	+detectLevelChange() : void	
+	+animate() : void	
+	+interact() : void	
+	+getEntityUnderCursor() : Entity*	
+	+getTextUnderCursor() : bool	
+	+unselected() : bool	
+	+loadLevel(int map) : void	
+	+setDatabaseManager(DatabaseManager* database_manager) : void	
+}
+
+class DatabaseManager{
+	__Private__
+	-_db : sqlite3*
+	-_stmt : sqlite3_stmt*
+	-_return_code : int
+	-_level_manager : LevelManager*
+	-_path_to_db : const std::string
+	-_path_to_map : const std::string
+	-explode(const std::string & str, char delim) const : std::vector<std::string>
+	__Public__
+	+DatabaseManager()
+	+open(std::string path) : void
+	+close() : void
+	+save() : void
+	+hydrate() : void
+	+setLevelManager(LevelManager* level_manager) : void
+	+updateClicked(int entity_id) : void
+	+selectReplies(int entity_id) : std::vector<std::string>
+	+selectAnimations(int entity_id) : std::vector<Animation>
+}
+@enduml

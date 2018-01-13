@@ -31,7 +31,6 @@ class Entity : public sf::Drawable, public sf::Transformable, public Clickable{
 
 	public:
 		Entity();
-		//Entity(const sf::Texture& texture, sf::IntRect rect, sf::Vector2f pos, bool clickable, std::string name, int id, int nb_frames, sf::Time time);
 		Entity(const sf::Texture& texture, int left, int top, int width, int height, bool clickable, bool clicked, std::string name, int id, std::vector<Animation>& animations);
 		void move(DIRECTION d); //moves in the DIRECTION direction
 		void display() const;
